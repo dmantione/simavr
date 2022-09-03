@@ -9,6 +9,15 @@ RELEASE	?= 0
 
 DESTDIR = /usr/local
 PREFIX = ${DESTDIR}
+RPMLIBDIR != rpm --eval "%{_lib}"
+SYSTEMLIBDIR ?= $(RPMLIBDIR)
+ifeq ($SYSTEMLIBDIR),)
+ifeq ($(shell uname -m), x86_64)
+SYSTEMLIBDIR = lib64
+else
+SYSTEMLIBDIR = lib
+endif
+endif
 
 .PHONY: doc
 
@@ -29,7 +38,7 @@ build-parts: build-examples
 install: install-simavr install-parts
 
 install-simavr:
-	$(MAKE) -C simavr install RELEASE=$(RELEASE) DESTDIR=$(DESTDIR) PREFIX=$(PREFIX)
+	$(MAKE) -C simavr install RELEASE=$(RELEASE) DESTDIR=$(DESTDIR) PREFIX=$(PREFIX) SYSTEMLIBDIR=$(SYSTEMLIBDIR)
 
 install-parts:
 	$(MAKE) -C examples/parts install RELEASE=$(RELEASE) DESTDIR=$(DESTDIR) PREFIX=$(PREFIX)

@@ -29,6 +29,9 @@ CFLAGS	+= -Werror
 # it otherwise eat quite a bit of few cycles, even disabled
 #CFLAGS	+= -DCONFIG_SIMAVR_TRACE=1
 
+#For extra safety, should normally be set by parent Makefile
+SYSTEMLIBDIR ?= lib
+
 all:
 	$(MAKE) obj config
 	$(MAKE) libsimavr ${target}
@@ -79,16 +82,16 @@ install : all
 	$(INSTALL) -m644 sim/*.h $(DESTDIR)/include/simavr/
 	$(INSTALL) -m644 sim_core_*.h $(DESTDIR)/include/simavr/
 	$(INSTALL) -m644 sim/avr/*.h $(DESTDIR)/include/simavr/avr/
-	$(MKDIR) $(DESTDIR)/lib
-	$(INSTALL) ${OBJ}/libsimavr.a $(DESTDIR)/lib/
+	$(MKDIR) $(DESTDIR)/$(SYSTEMLIBDIR)
+	$(INSTALL) ${OBJ}/libsimavr.a $(DESTDIR)/$(SYSTEMLIBDIR)/
 	$(MKDIR) $(DESTDIR)/lib/pkgconfig/
 	sed -e "s|PREFIX|${PREFIX}|g" -e "s|VERSION|${SIMAVR_VERSION}|g" \
 		simavr-avr.pc >$(DESTDIR)/lib/pkgconfig/simavr-avr.pc
 	sed -e "s|PREFIX|${PREFIX}|g" -e "s|VERSION|${SIMAVR_VERSION}|g" \
 		simavr.pc >$(DESTDIR)/lib/pkgconfig/simavr.pc
 ifeq (${shell uname}, Linux)
-	$(INSTALL) ${OBJ}/libsimavr.so.1 $(DESTDIR)/lib/
-	ln -sf libsimavr.so.1 $(DESTDIR)/lib/libsimavr.so
+	$(INSTALL) ${OBJ}/libsimavr.so.1 $(DESTDIR)/$(SYSTEMLIBDIR)/
+	ln -sf libsimavr.so.1 $(DESTDIR)/$(SYSTEMLIBDIR)/libsimavr.so
 endif
 	$(MKDIR) $(DESTDIR)/bin
 	$(INSTALL) ${OBJ}/${target}.elf $(DESTDIR)/bin/simavr
