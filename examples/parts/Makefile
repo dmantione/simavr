@@ -27,6 +27,10 @@ all: obj ${target}
 include ${simavr}/Makefile.common
 include ../Makefile.opengl
 
+#For extra safety, should normally be set by parent Makefile
+SYSTEMLIBDIR ?= lib
+
+
 objects := $(patsubst %.c,${OBJ}/%.o, $(wildcard *.c))
 
 # Unless the VHCI_USB env var is set, don't build this because it requires
@@ -55,8 +59,8 @@ install: obj ${target}
 	sed -e "s|PREFIX|${PREFIX}|g" -e "s|VERSION|${SIMAVR_VERSION}|g" \
 		simavrparts.pc >$(DESTDIR)/lib/pkgconfig/simavrparts.pc
 ifeq (${shell uname}, Linux)
-	$(INSTALL) ${OBJ}/libsimavrparts.so.1 $(DESTDIR)/lib/
-	ln -sf libsimavrparts.so.1 $(DESTDIR)/lib/libsimavrparts.so
+	$(INSTALL) ${OBJ}/libsimavrparts.so.1 $(DESTDIR)/$(SYSTEMLIBDIR)/
+	ln -sf libsimavrparts.so.1 $(DESTDIR)/$(SYSTEMLIBDIR)/libsimavrparts.so
 endif
 
 clean: clean-${OBJ}
